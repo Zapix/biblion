@@ -56,7 +56,9 @@ class Post(models.Model):
         """
         if slug == ALL_SECTION_NAME:
             return 1
-        return dict(zip(ig(SECTIONS, 0), range(2, 2 + len(SECTIONS))))[slug]
+        #return dict(zip(ig(SECTIONS, 0), range(2, 2 + len(SECTIONS))))[slug]
+        return dict((z, x + 1) for x, y, z in
+                               ((0, 'all', u'Все записи'),) + SECTIONS)[slug]
     
     @property
     def section_slug(self):
@@ -176,8 +178,11 @@ class Image(models.Model):
     image_path = models.ImageField(upload_to="images/%Y/%m/%d")
     url = models.CharField(max_length=150, blank=True)
     
-    timestamp = models.DateTimeField(default=datetime.now, editable=False)
+    timestamp = models.DateTimeField(auto_now=True, editable=False)
     
+    class Meta:
+        ordering = ('-timestamp',)
+        get_latest_by = 'timestamp'
     def __unicode__(self):
         if self.pk is not None:
             return "{{ %d }}" % self.pk
